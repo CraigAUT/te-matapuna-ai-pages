@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Te Mātāpuna · AI Learning Modules</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8eaf0;
+  --muted: #8892a4;
+  --pono: #3b82f6;
+  --tika: #10b981;
+  --aroha: #f472b6;
+  --radius: 14px;
+}
+
+html, body {
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 70% 40% at 15% 10%, rgba(59,130,246,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 35% at 85% 85%, rgba(167,139,250,0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+}
+
+/* ── HEADER ─────────────────────────────────────────── */
+.site-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.site-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #e8eaf0 0%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.site-sub {
+  font-size: 17px;
+  color: var(--muted);
+  max-width: 52ch;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.value-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 52px;
+}
+
+.chip {
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid;
+  letter-spacing: 0.02em;
+}
+.chip-pono  { border-color: var(--pono);  color: var(--pono);  background: rgba(59,130,246,0.08); }
+.chip-tika  { border-color: var(--tika);  color: var(--tika);  background: rgba(16,185,129,0.08); }
+.chip-aroha { border-color: var(--aroha); color: var(--aroha); background: rgba(244,114,182,0.08); }
+
+/* ── SECTION LABELS ─────────────────────────────────── */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── MODULE CARDS ────────────────────────────────────── */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 52px;
+}
+
+.module-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.module-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border2);
+}
+
+.card-accent {
+  height: 4px;
+}
+
+.card-inner {
+  padding: 22px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.card-link {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-link::after {
+  content: '→';
+  transition: transform 0.15s ease;
+}
+
+.module-card:hover .card-link::after {
+  transform: translateX(4px);
+}
+
+/* Card colour variants */
+.c-game     .card-accent { background: linear-gradient(90deg, #3b82f6, #6366f1); }
+.c-game     .card-eyebrow, .c-game .card-link { color: #818cf8; }
+
+.c-canvas   .card-accent { background: linear-gradient(90deg, #10b981, #06b6d4); }
+.c-canvas   .card-eyebrow, .c-canvas .card-link { color: #34d399; }
+
+.c-facilitator .card-accent { background: linear-gradient(90deg, #f472b6, #e879f9); }
+.c-facilitator .card-eyebrow, .c-facilitator .card-link { color: #f9a8d4; }
+
+.c-display  .card-accent { background: linear-gradient(90deg, #fbbf24, #f97316); }
+.c-display  .card-eyebrow, .c-display .card-link { color: #fcd34d; }
+
+/* ── ABOUT THIS REPO ─────────────────────────────────── */
+.about-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 52px;
+}
+
+.about-panel h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.about-panel p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.75;
+  max-width: 62ch;
+  margin-bottom: 24px;
+}
+
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.workflow-step {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 18px 16px;
+  border: 1px solid var(--border);
+}
+
+.workflow-step .step-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.workflow-step .step-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.workflow-step .step-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ── HOW TO CONTRIBUTE ───────────────────────────────── */
+.contribute-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 52px;
+}
+
+.contribute-panel h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.contribute-panel > p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.75;
+  max-width: 62ch;
+  margin-bottom: 28px;
+}
+
+.contrib-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contrib-step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  background: var(--surface2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.contrib-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--border2);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.contrib-content .contrib-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.contrib-content .contrib-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.contrib-content code {
+  font-family: monospace;
+  font-size: 12px;
+  background: var(--bg);
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  color: #93c5fd;
+}
+
+/* ── TEAM ────────────────────────────────────────────── */
+.team-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 52px;
+}
+
+.team-panel h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.team-panel p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.75;
+  max-width: 62ch;
+  margin-bottom: 20px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.team-card {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+}
+
+.team-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.team-role {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ── FOOTER ──────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-left {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.footer-left strong {
+  color: var(--text);
+}
+
+.footer-right {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.6;
+}
+
+.footer-right a {
+  color: var(--pono);
+  text-decoration: none;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media (max-width: 600px) {
+  .modules-grid   { grid-template-columns: 1fr; }
+  .workflow-grid  { grid-template-columns: 1fr; }
+  .team-grid      { grid-template-columns: 1fr; }
+  footer          { flex-direction: column; }
+  .footer-right   { text-align: left; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── HEADER ───────────────────────────────────────── -->
+  <div class="site-badge">Te Mātāpuna · AUT Library</div>
+  <h1 class="site-title">AI Learning<br>Modules</h1>
+  <p class="site-sub">Resources for students and teaching teams on using AI ethically and productively in academic work — grounded in <span lang="mi">Te Aronui</span> and the values of <span lang="mi">pono, tika,</span> and <span lang="mi">aroha</span>.</p>
+
+  <div class="value-chips">
+    <span class="chip chip-pono" lang="mi">Pono — the why</span>
+    <span class="chip chip-tika" lang="mi">Tika — the what</span>
+    <span class="chip chip-aroha" lang="mi">Aroha — the how</span>
+  </div>
+
+  <!-- ── RESOURCES ────────────────────────────────────── -->
+  <div class="section-label">Current resources — UNI101 · Diploma of Arts</div>
+
+  <div class="modules-grid">
+
+    <a class="module-card c-game" href="uni101_game_interactive.html">
+      <div class="card-accent"></div>
+      <div class="card-inner">
+        <div class="card-eyebrow">Interactive · Embeddable</div>
+        <div class="card-title">AI Decision Game</div>
+        <div class="card-desc">12 scenarios mapped to the Assessment 2 research process. Students choose YES, NO, or IT DEPENDS — then see the values perspective. Designed for iframe embedding in Canvas.</div>
+        <div class="card-link">Open game</div>
+      </div>
+    </a>
+
+    <a class="module-card c-canvas" href="uni101_canvas_page.html">
+      <div class="card-accent"></div>
+      <div class="card-inner">
+        <div class="card-eyebrow">Canvas · HTML page</div>
+        <div class="card-title">UNI101 Canvas Page</div>
+        <div class="card-desc">Full Canvas-safe HTML page covering values framing, whakapapa of ideas, game reference, and guided AI techniques for Stages 1 and 2 of Assessment 2.</div>
+        <div class="card-link">Open page</div>
+      </div>
+    </a>
+
+    <a class="module-card c-facilitator" href="uni101_game_cards.html">
+      <div class="card-accent"></div>
+      <div class="card-inner">
+        <div class="card-eyebrow">Print · Facilitator pack</div>
+        <div class="card-title">Facilitator Card Pack</div>
+        <div class="card-desc">Full scenario cards with debrief notes, values tags, and closing quotes. Includes student YES / NO / IT DEPENDS response cards and facilitator sequencing guidance.</div>
+        <div class="card-link">Open pack</div>
+      </div>
+    </a>
+
+    <a class="module-card c-display" href="uni101_game_cards_display.html">
+      <div class="card-accent"></div>
+      <div class="card-inner">
+        <div class="card-eyebrow">Print · Display</div>
+        <div class="card-title">Scenario Display Cards</div>
+        <div class="card-desc">Scenarios only — no answers, no debrief. For projecting to the class or placing on tables. Students see the scenario title and text, nothing more.</div>
+        <div class="card-link">Open cards</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ── ABOUT THIS REPO ──────────────────────────────── -->
+  <div class="section-label">About this repository</div>
+
+  <div class="about-panel">
+    <h2>What this space is for</h2>
+    <p>This GitHub repository is the working home for Te Mātāpuna's AI learning modules. It does three things: it hosts the resources as live web pages, it keeps a full version history of every change, and it gives the team a shared space to develop and iterate together.</p>
+    <p>Everything here is a working draft. Resources are built for specific courses and cohorts, tested in the room, then refined. The version history means we never lose earlier iterations — and we can always see what changed, when, and why.</p>
+
+    <div class="workflow-grid">
+      <div class="workflow-step">
+        <div class="step-num">Host</div>
+        <div class="step-title">Live web pages</div>
+        <div class="step-desc">Every HTML file in this repo is instantly available as a live URL via GitHub Pages. No server needed.</div>
+      </div>
+      <div class="workflow-step">
+        <div class="step-num">Track</div>
+        <div class="step-title">Version history</div>
+        <div class="step-desc">Every upload and edit is recorded. You can see the full history of any file, compare versions, and restore earlier ones.</div>
+      </div>
+      <div class="workflow-step">
+        <div class="step-num">Collaborate</div>
+        <div class="step-title">Team editing</div>
+        <div class="step-desc">Collaborators can upload updated files directly. Changes are tracked by who made them and when.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HOW TO CONTRIBUTE ─────────────────────────────── -->
+  <div class="section-label">How to update or add resources</div>
+
+  <div class="contribute-panel">
+    <h2>For the team — making changes</h2>
+    <p>You don't need to know how to code to contribute. If you have an updated HTML file, you can upload it directly and it replaces the old version — while GitHub keeps the history of both.</p>
+
+    <div class="contrib-steps">
+
+      <div class="contrib-step">
+        <div class="contrib-num">1</div>
+        <div class="contrib-content">
+          <div class="contrib-title">Get added as a collaborator</div>
+          <div class="contrib-desc">Ask Craig to add your GitHub username via Settings → Collaborators. You'll get an email invite — accept it and you'll have access to upload and edit files directly.</div>
+        </div>
+      </div>
+
+      <div class="contrib-step">
+        <div class="contrib-num">2</div>
+        <div class="contrib-content">
+          <div class="contrib-title">Upload a new or updated file</div>
+          <div class="contrib-desc">Go to the repo → <strong>Add file</strong> → <strong>Upload files</strong>. Drag your file in. If it has the same filename as an existing file, it will replace it. If it's new, it'll be added alongside.</div>
+        </div>
+      </div>
+
+      <div class="contrib-step">
+        <div class="contrib-num">3</div>
+        <div class="contrib-content">
+          <div class="contrib-title">Write a commit message</div>
+          <div class="contrib-desc">Before clicking <strong>Commit changes</strong>, write a brief note about what you changed — e.g. <code>Updated Card 5 scenario wording</code> or <code>Added HOSPO507 game</code>. This becomes the version history entry and helps everyone track what changed.</div>
+        </div>
+      </div>
+
+      <div class="contrib-step">
+        <div class="contrib-num">4</div>
+        <div class="contrib-content">
+          <div class="contrib-title">The live URL updates automatically</div>
+          <div class="contrib-desc">Within a minute or two of committing, GitHub Pages rebuilds and the live URL serves the new version. No manual republishing needed.</div>
+        </div>
+      </div>
+
+      <div class="contrib-step">
+        <div class="contrib-num">5</div>
+        <div class="contrib-content">
+          <div class="contrib-title">To see version history for any file</div>
+          <div class="contrib-desc">Click the file in the repo → click <strong>History</strong> (top right of the file view). You'll see every commit that touched that file, who made it, and when. Click any commit to see exactly what changed.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── TEAM ──────────────────────────────────────────── -->
+  <div class="section-label">The team</div>
+
+  <div class="team-panel">
+    <h2>Te Mātāpuna — AUT Library</h2>
+    <p>This work is developed by the Te Mātāpuna learning advisors team in collaboration with course coordinators across AUT. Each module is built with a specific course team and refined through use.</p>
+
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-name">Craig</div>
+        <div class="team-role">Repository owner · AI module lead · UNI101, DESN511</div>
+      </div>
+      <div class="team-card">
+        <div class="team-name">Tracy</div>
+        <div class="team-role">Research question and library stages</div>
+      </div>
+      <div class="team-card">
+        <div class="team-name">Jessica</div>
+        <div class="team-role">Writing, citation, and whakapapa of knowledge</div>
+      </div>
+      <div class="team-card">
+        <div class="team-name">Denise</div>
+        <div class="team-role">Assessment and submission stages</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-left">
+      <strong>Te Mātāpuna · AUT Library</strong><br>
+      Values framework: <em lang="mi">Te Aronui: AUT Te Tiriti Framework</em> (Tier 2)<br>
+      Information evaluation: Feekery &amp; Tawhai (2024) <em lang="mi">Te Whatu Aho Rau</em>
+    </div>
+    <div class="footer-right">
+      <a href="https://github.com/CraigAUT/te-matapuna-ai-pages" target="_blank">github.com/CraigAUT/te-matapuna-ai-pages</a><br>
+      All resources are working drafts — version controlled via GitHub
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
