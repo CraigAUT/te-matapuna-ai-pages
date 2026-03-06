@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Decision Game · UNI101</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,300;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ── RESET & BASE ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0f1117;
+  --surface:   #1a1d27;
+  --surface2:  #22263a;
+  --border:    rgba(255,255,255,0.08);
+  --border2:   rgba(255,255,255,0.14);
+  --text:      #e8eaf0;
+  --muted:     #8892a4;
+  --pono:      #3b82f6;
+  --pono-dim:  #1e3a5f;
+  --tika:      #10b981;
+  --tika-dim:  #064e3b;
+  --aroha:     #f472b6;
+  --aroha-dim: #831843;
+  --whakapapa: #a78bfa;
+  --whakapapa-dim: #4c1d95;
+  --yes:       #22c55e;
+  --no:        #f87171;
+  --depends:   #fbbf24;
+  --radius:    14px;
+  --shadow:    0 8px 32px rgba(0,0,0,0.5);
+}
+
+html, body {
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND TEXTURE ───────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(59,130,246,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 90%, rgba(167,139,250,0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LAYOUT ───────────────────────────────────────────── */
+#app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px 40px;
+}
+
+/* ── SCREENS ──────────────────────────────────────────── */
+.screen {
+  width: 100%;
+  max-width: 720px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+.screen.active { display: flex; }
+
+/* ── INTRO SCREEN ─────────────────────────────────────── */
+#screen-intro {
+  padding-top: 48px;
+  gap: 0;
+  animation: fadeUp 0.6s ease both;
+}
+
+.intro-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.intro-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(34px, 6vw, 52px);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #e8eaf0 0%, #a5b4fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.intro-sub {
+  font-size: 17px;
+  color: var(--muted);
+  text-align: center;
+  max-width: 46ch;
+  margin-bottom: 40px;
+  line-height: 1.7;
+}
+
+/* Value chips row */
+.value-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 48px;
+}
+
+.chip {
+  padding: 8px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid;
+  letter-spacing: 0.02em;
+}
+.chip-pono   { border-color: var(--pono);   color: var(--pono);   background: rgba(59,130,246,0.08); }
+.chip-tika   { border-color: var(--tika);   color: var(--tika);   background: rgba(16,185,129,0.08); }
+.chip-aroha  { border-color: var(--aroha);  color: var(--aroha);  background: rgba(244,114,182,0.08); }
+
+/* How it works panel */
+.how-panel {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 32px;
+}
+
+.how-panel h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: var(--text);
+}
+
+.how-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.how-step {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+
+.how-step .step-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.how-step .step-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* Start button */
+.btn-start {
+  padding: 16px 48px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  border: none;
+  border-radius: 100px;
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(99,102,241,0.5);
+}
+
+.btn-start:active { transform: translateY(0); }
+
+/* ── PROGRESS BAR ─────────────────────────────────────── */
+#progress-wrap {
+  width: 100%;
+  max-width: 720px;
+  padding: 28px 0 20px;
+  display: none;
+}
+#progress-wrap.visible { display: block; }
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.progress-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.progress-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.progress-track {
+  height: 3px;
+  background: var(--surface2);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, #3b82f6, #a78bfa);
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── GAME SCREEN ──────────────────────────────────────── */
+#screen-game {
+  padding-top: 0;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Block label */
+.block-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 100px;
+  border: 1px solid;
+  align-self: flex-start;
+  transition: all 0.4s ease;
+}
+
+/* Scenario card */
+.scenario-card {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.scenario-card.exiting {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+.scenario-card.entering {
+  animation: slideInRight 0.4s cubic-bezier(0.4,0,0.2,1) both;
+}
+
+.card-top {
+  height: 5px;
+  transition: background 0.4s ease;
+}
+
+.card-body {
+  padding: 32px 36px;
+}
+
+.card-num {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20px;
+  line-height: 1.3;
+}
+
+.card-scenario {
+  font-size: 17px;
+  color: #c8d0de;
+  line-height: 1.75;
+  padding: 20px 24px;
+  background: var(--surface2);
+  border-radius: 10px;
+  border-left: 3px solid var(--border2);
+  font-style: italic;
+}
+
+/* ── CHOICE BUTTONS ───────────────────────────────────── */
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.choice-btn {
+  padding: 18px 12px;
+  border-radius: 14px;
+  border: 2px solid;
+  background: transparent;
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.choice-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.choice-btn:hover { transform: translateY(-3px); }
+.choice-btn:hover::before { opacity: 1; }
+.choice-btn:active { transform: translateY(0) scale(0.97); }
+
+.choice-btn .choice-label {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.choice-btn .choice-sub {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.75;
+  letter-spacing: 0.04em;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.btn-yes {
+  border-color: var(--yes);
+  color: var(--yes);
+}
+.btn-yes::before { background: rgba(34,197,94,0.1); }
+.btn-yes:hover { box-shadow: 0 0 24px rgba(34,197,94,0.3); }
+
+.btn-depends {
+  border-color: var(--depends);
+  color: var(--depends);
+}
+.btn-depends::before { background: rgba(251,191,36,0.1); }
+.btn-depends:hover { box-shadow: 0 0 24px rgba(251,191,36,0.3); }
+
+.btn-no {
+  border-color: var(--no);
+  color: var(--no);
+}
+.btn-no::before { background: rgba(248,113,113,0.1); }
+.btn-no:hover { box-shadow: 0 0 24px rgba(248,113,113,0.3); }
+
+/* Selected state */
+.choice-btn.selected {
+  transform: translateY(-3px) scale(1.04);
+}
+.choice-btn.selected::before { opacity: 1; }
+.btn-yes.selected    { background: rgba(34,197,94,0.15);  box-shadow: 0 0 32px rgba(34,197,94,0.4); }
+.btn-depends.selected{ background: rgba(251,191,36,0.15); box-shadow: 0 0 32px rgba(251,191,36,0.4); }
+.btn-no.selected     { background: rgba(248,113,113,0.15); box-shadow: 0 0 32px rgba(248,113,113,0.4); }
+
+.choices.disabled .choice-btn { pointer-events: none; opacity: 0.5; }
+.choices.disabled .choice-btn.selected { opacity: 1; }
+
+/* ── REVEAL PANEL ─────────────────────────────────────── */
+.reveal-panel {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  animation: revealSlide 0.5s cubic-bezier(0.4,0,0.2,1) both;
+  display: none;
+}
+
+.reveal-panel.visible { display: block; }
+
+.reveal-header {
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.reveal-verdict {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.verdict-yes     { color: var(--yes); }
+.verdict-no      { color: var(--no); }
+.verdict-depends { color: var(--depends); }
+
+.reveal-your-choice {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 100px;
+  background: var(--surface2);
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.reveal-body {
+  padding: 24px 28px;
+  background: var(--surface);
+}
+
+/* Value tag */
+.value-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1.5px solid;
+  margin-bottom: 16px;
+  letter-spacing: 0.02em;
+  animation: valuePulse 0.6s ease 0.3s both;
+}
+
+.tag-pono      { border-color: var(--pono);      color: var(--pono);      background: rgba(59,130,246,0.1); }
+.tag-tika      { border-color: var(--tika);      color: var(--tika);      background: rgba(16,185,129,0.1); }
+.tag-aroha     { border-color: var(--aroha);     color: var(--aroha);     background: rgba(244,114,182,0.1); }
+.tag-whakapapa { border-color: var(--whakapapa); color: var(--whakapapa); background: rgba(167,139,250,0.1); }
+
+.reveal-debrief {
+  font-size: 15px;
+  color: #c8d0de;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+
+.reveal-quote {
+  padding: 14px 18px;
+  background: var(--surface2);
+  border-left: 3px solid var(--border2);
+  border-radius: 0 8px 8px 0;
+  font-size: 14px;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* Matched/different callout */
+.choice-match {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.match-yes  { background: rgba(34,197,94,0.08);  color: #86efac; border: 1px solid rgba(34,197,94,0.2); }
+.match-diff { background: rgba(251,191,36,0.08); color: #fde68a; border: 1px solid rgba(251,191,36,0.2); }
+.match-icon { font-size: 16px; }
+
+/* Next button */
+.btn-next {
+  padding: 14px 36px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 100px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 4px;
+  align-self: flex-end;
+}
+
+.btn-next:hover {
+  background: var(--border2);
+  transform: translateX(4px);
+}
+
+/* ── END SCREEN ───────────────────────────────────────── */
+#screen-end {
+  padding-top: 48px;
+  gap: 24px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.end-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #e8eaf0 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.end-sub {
+  font-size: 16px;
+  color: var(--muted);
+  text-align: center;
+  max-width: 44ch;
+  line-height: 1.7;
+}
+
+/* Score summary */
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.score-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.score-num {
+  font-family: 'Fraunces', serif;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.score-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.score-matched { color: var(--yes); }
+.score-diff    { color: var(--depends); }
+.score-total   { color: var(--text); }
+
+/* Values encountered */
+.values-summary {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.values-summary h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+.value-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.value-row:last-child { border-bottom: none; }
+
+.value-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.value-name {
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+.value-cards-list {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Reflection prompt */
+.reflection-box {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+}
+
+.reflection-box h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+
+.reflection-q {
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border-left: 3px solid var(--border2);
+  font-size: 14px;
+  color: #c8d0de;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.reflection-q:last-child { margin-bottom: 0; }
+
+/* Play again */
+.btn-again {
+  padding: 14px 40px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 100px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-again:hover {
+  background: var(--border2);
+  transform: translateY(-2px);
+}
+
+/* ── ANIMATIONS ───────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(48px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes revealSlide {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes valuePulse {
+  0%   { transform: scale(0.8); opacity: 0; }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────── */
+@media (max-width: 560px) {
+  .how-steps { grid-template-columns: 1fr; }
+  .choices   { grid-template-columns: 1fr; gap: 10px; }
+  .choice-btn .choice-label { font-size: 18px; }
+  .score-grid { grid-template-columns: 1fr; }
+  .card-body  { padding: 24px 20px; }
+  .reveal-body { padding: 18px 20px; }
+}
+
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══ INTRO SCREEN ════════════════════════════════════ -->
+  <section class="screen active" id="screen-intro">
+
+    <div class="intro-badge">UNI101 · Diploma of Arts · AI &amp; Research</div>
+
+    <h1 class="intro-title">The AI<br>Decision Game</h1>
+
+    <p class="intro-sub">12 real situations. Three positions to take.<br>One question running through all of them.</p>
+
+    <div class="value-chips">
+      <span class="chip chip-pono" lang="mi">Pono — the why</span>
+      <span class="chip chip-tika" lang="mi">Tika — the what</span>
+      <span class="chip chip-aroha" lang="mi">Aroha — the how</span>
+    </div>
+
+    <div class="how-panel">
+      <h3>How it works</h3>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="step-num">Step 1</div>
+          <div class="step-text">Read a scenario — a real situation you might face when using AI in your research.</div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">Step 2</div>
+          <div class="step-text">Choose your position: <strong>YES</strong>, <strong>NO</strong>, or <strong>IT DEPENDS</strong>. There's no trick — trust your instinct.</div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">Step 3</div>
+          <div class="step-text">See the values perspective. Which of <span lang="mi">pono, tika,</span> or <span lang="mi">aroha</span> is doing the work here?</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startGame()">Start — 12 scenarios →</button>
+
+  </section>
+
+  <!-- ══ PROGRESS BAR ════════════════════════════════════ -->
+  <div id="progress-wrap">
+    <div class="progress-meta">
+      <span class="progress-label" id="progress-block-label">Block 1</span>
+      <span class="progress-count" id="progress-count">1 / 12</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- ══ GAME SCREEN ══════════════════════════════════════ -->
+  <section class="screen" id="screen-game">
+
+    <div class="block-label" id="game-block-label">Block 1 · Research Question</div>
+
+    <!-- Scenario card -->
+    <div class="scenario-card entering" id="scenario-card">
+      <div class="card-top" id="card-top"></div>
+      <div class="card-body">
+        <div class="card-num" id="card-num">Scenario 1 of 12</div>
+        <div class="card-title" id="card-title">Loading...</div>
+        <div class="card-scenario" id="card-scenario">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Choices -->
+    <div class="choices" id="choices">
+      <button class="choice-btn btn-yes" onclick="choose('yes')">
+        <span class="choice-label">YES</span>
+        <span class="choice-sub">This use of AI is appropriate</span>
+      </button>
+      <button class="choice-btn btn-depends" onclick="choose('depends')">
+        <span class="choice-label">IT DEPENDS</span>
+        <span class="choice-sub">Depends on how &amp; why</span>
+      </button>
+      <button class="choice-btn btn-no" onclick="choose('no')">
+        <span class="choice-label">NO</span>
+        <span class="choice-sub">This use is not appropriate</span>
+      </button>
+    </div>
+
+    <!-- Reveal panel -->
+    <div class="reveal-panel" id="reveal-panel">
+      <div class="reveal-header" id="reveal-header">
+        <div class="reveal-verdict" id="reveal-verdict"></div>
+        <div class="reveal-your-choice" id="reveal-your-choice"></div>
+      </div>
+      <div class="reveal-body">
+        <div class="choice-match" id="choice-match"></div>
+        <div class="value-tag" id="value-tag"></div>
+        <div class="reveal-debrief" id="reveal-debrief"></div>
+        <div class="reveal-quote" id="reveal-quote"></div>
+        <br>
+        <button class="btn-next" id="btn-next" onclick="nextCard()">Next scenario →</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══ END SCREEN ══════════════════════════════════════ -->
+  <section class="screen" id="screen-end">
+
+    <h2 class="end-title">That's all 12.</h2>
+    <p class="end-sub">Here's a summary of what came up — and some things worth sitting with.</p>
+
+    <div class="score-grid">
+      <div class="score-card">
+        <div class="score-num score-matched" id="end-matched">0</div>
+        <div class="score-label">Matched suggested</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num score-diff" id="end-diff">0</div>
+        <div class="score-label">Saw it differently</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num score-total">12</div>
+        <div class="score-label">Scenarios total</div>
+      </div>
+    </div>
+
+    <div class="values-summary">
+      <h3>Values that came up</h3>
+      <div class="value-row">
+        <div class="value-dot" style="background:var(--pono);"></div>
+        <div class="value-name" style="color:var(--pono);" lang="mi">Pono</div>
+        <div class="value-cards-list" id="val-pono">—</div>
+      </div>
+      <div class="value-row">
+        <div class="value-dot" style="background:var(--tika);"></div>
+        <div class="value-name" style="color:var(--tika);" lang="mi">Tika</div>
+        <div class="value-cards-list" id="val-tika">—</div>
+      </div>
+      <div class="value-row">
+        <div class="value-dot" style="background:var(--aroha);"></div>
+        <div class="value-name" style="color:var(--aroha);" lang="mi">Aroha</div>
+        <div class="value-cards-list" id="val-aroha">—</div>
+      </div>
+      <div class="value-row">
+        <div class="value-dot" style="background:var(--whakapapa);"></div>
+        <div class="value-name" style="color:var(--whakapapa);" lang="mi">Whakapapa</div>
+        <div class="value-cards-list" id="val-whakapapa">—</div>
+      </div>
+    </div>
+
+    <div class="reflection-box">
+      <h3>Take these questions into your research</h3>
+      <div class="reflection-q"><strong style="color:var(--pono);" lang="mi">Pono:</strong> Is the thinking genuinely mine — or have I outsourced something I should have done myself?</div>
+      <div class="reflection-q"><strong style="color:var(--tika);" lang="mi">Tika:</strong> Am I using AI as the right tool, for the right purpose, at the right moment?</div>
+      <div class="reflection-q"><strong style="color:var(--aroha);" lang="mi">Aroha:</strong> Am I genuinely caring for my own learning — and being fair to everyone else?</div>
+      <div class="reflection-q"><strong style="color:var(--whakapapa);" lang="mi">Whakapapa of ideas:</strong> Can I trace every idea in my work back to a real thinker? Is the lineage of knowledge intact?</div>
+    </div>
+
+    <button class="btn-again" onclick="restartGame()">← Play again</button>
+
+  </section>
+
+</div>
+
+<script>
+// ── SCENARIO DATA ──────────────────────────────────────
+const scenarios = [
+  {
+    id: 1,
+    block: "Block 1 · Developing Your Research Question",
+    blockColor: "#3b82f6",
+    title: "Exploring angles on your topic",
+    scenario: "You've been given a broad topic. You ask AI: 'What are some different angles I could take on this topic?' — then you choose the one that interests you most.",
+    answer: "yes",
+    value: "tika",
+    valueName: "Tika — the what",
+    debrief: "This is AI as a thinking partner, not a decision-maker. You're generating options — then doing the intellectual work of choosing. That division of labour is sound. The thinking that matters, the choice of direction, is entirely yours.",
+    quote: "AI knows a lot of possibilities. You know what matters to you. Together, that's a useful conversation."
+  },
+  {
+    id: 2,
+    block: "Block 1 · Developing Your Research Question",
+    blockColor: "#3b82f6",
+    title: "Letting AI choose your research question",
+    scenario: "You're stuck on your topic. You ask AI: 'What should my research question be?' — and you use what it gives you.",
+    answer: "depends",
+    value: "pono",
+    valueName: "Pono — the why",
+    debrief: "The key question is what happened next. Did you interrogate the suggestion? Test it against the marking criteria? Make it genuinely yours? Or did you accept it without thinking because you were stuck? Being stuck is real — using AI to unstick yourself is fine. Using AI to skip the thinking is where pono becomes an issue.",
+    quote: "A research question that doesn't come from your own curiosity is very hard to write 1000 words about."
+  },
+  {
+    id: 3,
+    block: "Block 1 · Developing Your Research Question",
+    blockColor: "#3b82f6",
+    title: "Testing your own research question",
+    scenario: "You draft a research question yourself, then ask AI: 'Is this question too broad, too narrow, or about right for a 1000-word analysis?' You use the feedback to refine it.",
+    answer: "yes",
+    value: "aroha",
+    valueName: "Aroha — the how",
+    debrief: "This is aroha for your own learning in action. You did the hard part — you wrote the question. You used AI to stress-test it. The intellectual ownership is yours throughout. You're not outsourcing the thinking; you're getting feedback on thinking you've already done.",
+    quote: "You wrote it, you're evaluating it, you decide what to do with the feedback."
+  },
+  {
+    id: 4,
+    block: "Block 2 · Sourcing Information",
+    blockColor: "#10b981",
+    title: "Generating keywords and synonyms",
+    scenario: "You use AI to brainstorm synonyms and related terms for your keywords — then you test those terms yourself in Library Search.",
+    answer: "yes",
+    value: "tika",
+    valueName: "Tika — the what",
+    debrief: "The right tool, used at the right moment, for the right purpose. AI is genuinely good at generating word variants. The intellectual work of evaluating which results are useful — reading the abstracts, deciding what's relevant — remains yours. This is a clean, ethical use of AI as a tool.",
+    quote: "AI knows a lot of words. You know your topic. Together that's a useful search."
+  },
+  {
+    id: 5,
+    block: "Block 2 · Sourcing Information",
+    blockColor: "#10b981",
+    title: "Asking AI to find your sources",
+    scenario: "You ask Copilot to find you three academic sources on your topic.",
+    answer: "depends",
+    value: "pono",
+    valueName: "Pono — truth & reality",
+    debrief: "Here's the risk: AI tools — including Copilot — can produce references that look completely real but don't exist. This is called hallucination, and it happens even with confident, well-formatted citations. If you submit a reference that doesn't exist, that is fabrication — regardless of your intent. Pono requires you to verify. Any source AI suggests must be checked in Library Search before you use it.",
+    quote: "Citing a source that doesn't exist is fabrication — even if you didn't mean it."
+  },
+  {
+    id: 6,
+    block: "Block 2 · Sourcing Information",
+    blockColor: "#10b981",
+    title: "AI finds, summarises and references your sources",
+    scenario: "You ask AI to find your three sources, summarise them, and you paste the summaries into your reference list.",
+    answer: "no",
+    value: "pono",
+    valueName: "Pono — truth & reality",
+    debrief: "Every step here carries a different risk. You haven't read the sources. You don't know if they exist. You don't know if the summaries accurately represent what the authors said. AI summaries can be subtly, confidently wrong — and if you haven't read the source, you can't catch that. Your reference list would be built on unverified foundations.",
+    quote: "You're here to learn to read and think. That's the whole point of Stages 2 and 3."
+  },
+  {
+    id: 7,
+    block: "Block 2 · Sourcing Information",
+    blockColor: "#10b981",
+    title: "Building a search string",
+    scenario: "Following on from the keywords you generated, you ask AI to combine them into a search string using AND, OR, and brackets. You also ask it to explain the string in one sentence so you understand what it's doing. Then you run it yourself in Library Search.",
+    answer: "yes",
+    value: "tika",
+    valueName: "Tika — doing what is needed, in the right way",
+    debrief: "Asking for that one-sentence explanation is the critical move. It's the difference between using a tool and understanding it. If you know why the search string is structured the way it is, you can adapt it next time — with or without AI. The searching itself is yours; you ran it, you evaluated the results.",
+    quote: "Next time, you can build the string yourself."
+  },
+  {
+    id: 8,
+    block: "Block 3 · Reading & Note-Making",
+    blockColor: "#f472b6",
+    title: "Unpacking a difficult concept",
+    scenario: "You don't understand a concept in your reading. You paste the paragraph into Copilot and ask it to explain it in plain language.",
+    answer: "depends",
+    value: "pono",
+    valueName: "Pono — honest intention",
+    debrief: "The pivotal question is your honest intention. Are you using AI to help you read the text — to unlock something that was blocking your understanding? Or are you using AI instead of reading, to avoid engaging with something difficult? The first is a genuine reading strategy. The second is where pono asks you to look at yourself honestly.",
+    quote: "Using AI to unlock a difficult text so you can understand it better: that's a reading strategy. Using AI so you never have to read the difficult text: that's avoiding the learning."
+  },
+  {
+    id: 9,
+    block: "Block 3 · Reading & Note-Making",
+    blockColor: "#f472b6",
+    title: "Checking your own understanding",
+    scenario: "After reading a section, you explain the main idea back to Copilot in your own words and ask: 'Have I understood this correctly?'",
+    answer: "yes",
+    value: "aroha",
+    valueName: "Aroha — caring for your own learning",
+    debrief: "This is one of the most sophisticated ways to use AI in your studies. You read, you processed, you formed your own understanding — then you used AI as a mirror to test it. The thinking is entirely yours. AI is the sounding board, not the source. This is aroha for your learning in the most active sense.",
+    quote: "The thinking is yours. AI is just giving you feedback on it."
+  },
+  {
+    id: 10,
+    block: "Block 3 · Reading & Note-Making",
+    blockColor: "#f472b6",
+    title: "Using an AI summary as your notes",
+    scenario: "You ask Copilot to summarise an article for you. You use the summary as your notes and build your assignment from it.",
+    answer: "no",
+    value: "whakapapa",
+    valueName: "Whakapapa of ideas",
+    debrief: "Every idea has a whakapapa — a lineage tracing back to the thinker who first articulated it. When AI summarises a source for you, that lineage gets cut. The original author's argument has been filtered, flattened, and abstracted. You end up working with ideas that are no longer directly connected to where they came from. There's also a practical risk: AI summaries can misrepresent what an author actually argued. You'd have no way to know.",
+    quote: "When AI abstracts a text for you, the whakapapa of ideas gets broken."
+  },
+  {
+    id: 11,
+    block: "Block 4 · Writing, Feedback & Submission",
+    blockColor: "#a78bfa",
+    title: "Getting feedback on your draft",
+    scenario: "You've written a rough first draft. You paste it into Copilot and ask: 'Does my argument make sense? Is there anything missing?'",
+    answer: "depends",
+    value: "tika",
+    valueName: "Pono & Tika",
+    debrief: "Getting feedback on your own writing is legitimate — Stage 6 of Assessment 2 is literally 'receive and apply feedback.' The question is what happened next. Did you read the feedback, think about it, and make your own decisions about what to change? Or did you ask Copilot to rewrite the draft for you? The first is using AI as a thinking partner. The second is where pono and tika both have something to say.",
+    quote: "The question is whether the thinking and the fixing is yours."
+  },
+  {
+    id: 12,
+    block: "Block 4 · Writing, Feedback & Submission",
+    blockColor: "#a78bfa",
+    title: "Declaring your use of AI",
+    scenario: "You used AI at various points in your research process. At the end, you're not sure exactly what counts as 'AI-generated material' — so you don't declare anything and just submit.",
+    answer: "no",
+    value: "pono",
+    valueName: "Pono — honesty even when it's unclear",
+    debrief: "The Assessment 2 brief is clear: any AI-generated material that informed your work must be cited. Uncertainty about what exactly counts is not a reason to declare nothing — it's a reason to ask your lecturer before you submit. Pono doesn't only apply when things are clear-cut. It applies especially in the grey areas where the easy path is to say nothing.",
+    quote: "Declaring too much is never a problem. Declaring nothing when you used something is."
+  }
+];
+
+// ── STATE ──────────────────────────────────────────────
+let currentIndex = 0;
+let userChoices  = [];
+let matched      = 0;
+
+// ── HELPERS ────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+function choiceLabel(c) {
+  return c === 'yes' ? 'YES' : c === 'no' ? 'NO' : 'IT DEPENDS';
+}
+
+function answerColor(a) {
+  return a === 'yes' ? 'var(--yes)' : a === 'no' ? 'var(--no)' : 'var(--depends)';
+}
+
+function answerClass(a) {
+  return a === 'yes' ? 'verdict-yes' : a === 'no' ? 'verdict-no' : 'verdict-depends';
+}
+
+function valueTagClass(v) {
+  if (v === 'pono' || v.includes('pono')) return 'tag-pono';
+  if (v === 'tika' || v.includes('tika')) return 'tag-tika';
+  if (v === 'aroha' || v.includes('aroha')) return 'tag-aroha';
+  if (v === 'whakapapa') return 'tag-whakapapa';
+  return 'tag-pono';
+}
+
+function blockAccentStyle(color) {
+  return `background: ${color};`;
+}
+
+// ── RENDER CARD ────────────────────────────────────────
+function renderCard(index) {
+  const s = scenarios[index];
+
+  // Block label
+  const blockEl = $('game-block-label');
+  blockEl.textContent = s.block;
+  blockEl.style.borderColor = s.blockColor;
+  blockEl.style.color = s.blockColor;
+  blockEl.style.background = s.blockColor + '18';
+
+  // Card top bar
+  $('card-top').style.background = s.blockColor;
+
+  // Card content
+  $('card-num').textContent = `Scenario ${s.id} of ${scenarios.length}`;
+  $('card-title').textContent = s.title;
+  $('card-scenario').textContent = `"${s.scenario}"`;
+
+  // Progress
+  $('progress-fill').style.width = `${(index / scenarios.length) * 100}%`;
+  $('progress-count').textContent = `${index + 1} / ${scenarios.length}`;
+  $('progress-block-label').textContent = s.block.split(' · ')[0];
+
+  // Reset reveal
+  const revealEl = $('reveal-panel');
+  revealEl.classList.remove('visible');
+  revealEl.style.display = 'none';
+
+  // Reset choices
+  const choicesEl = $('choices');
+  choicesEl.classList.remove('disabled');
+  choicesEl.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+
+  // Animate card in
+  const card = $('scenario-card');
+  card.classList.remove('exiting');
+  card.classList.add('entering');
+  setTimeout(() => card.classList.remove('entering'), 400);
+}
+
+// ── CHOOSE ─────────────────────────────────────────────
+function choose(choice) {
+  const s = scenarios[currentIndex];
+  userChoices.push(choice);
+
+  // Highlight chosen button
+  const choicesEl = $('choices');
+  choicesEl.classList.add('disabled');
+  const btnMap = { yes: '.btn-yes', depends: '.btn-depends', no: '.btn-no' };
+  choicesEl.querySelector(btnMap[choice]).classList.add('selected');
+
+  // Delay before reveal
+  setTimeout(() => showReveal(s, choice), 300);
+}
+
+// ── SHOW REVEAL ────────────────────────────────────────
+function showReveal(s, choice) {
+  const isMatch = choice === s.answer;
+  if (isMatch) matched++;
+
+  // Verdict
+  const verdictEl = $('reveal-verdict');
+  verdictEl.textContent = s.answer === 'yes' ? 'YES' : s.answer === 'no' ? 'NO' : 'IT DEPENDS';
+  verdictEl.className = 'reveal-verdict ' + answerClass(s.answer);
+
+  // Header background
+  $('reveal-header').style.background = s.blockColor + '22';
+  $('reveal-header').style.borderBottom = `1px solid ${s.blockColor}44`;
+
+  // Your choice tag
+  $('reveal-your-choice').textContent = `You chose: ${choiceLabel(choice)}`;
+
+  // Match callout
+  const matchEl = $('choice-match');
+  if (isMatch) {
+    matchEl.className = 'choice-match match-yes';
+    matchEl.innerHTML = `<span class="match-icon">✓</span> Your choice matched the suggested answer — here's why it holds up.`;
+  } else {
+    matchEl.className = 'choice-match match-diff';
+    matchEl.innerHTML = `<span class="match-icon">↔</span> You chose <strong>${choiceLabel(choice)}</strong> — the suggested answer is <strong>${choiceLabel(s.answer)}</strong>. Here's another way to look at it.`;
+  }
+
+  // Value tag
+  const tagEl = $('value-tag');
+  tagEl.textContent = s.valueName;
+  tagEl.className = 'value-tag ' + valueTagClass(s.value);
+
+  // Debrief & quote
+  $('reveal-debrief').textContent = s.debrief;
+  $('reveal-quote').textContent = `"${s.quote}"`;
+
+  // Last card: change next button
+  if (currentIndex === scenarios.length - 1) {
+    $('btn-next').textContent = 'See your summary →';
+  } else {
+    $('btn-next').textContent = 'Next scenario →';
+  }
+
+  // Show reveal panel
+  const revealEl = $('reveal-panel');
+  revealEl.style.display = 'block';
+  requestAnimationFrame(() => revealEl.classList.add('visible'));
+}
+
+// ── NEXT CARD ──────────────────────────────────────────
+function nextCard() {
+  if (currentIndex === scenarios.length - 1) {
+    showEnd();
+    return;
+  }
+
+  // Exit animation
+  const card = $('scenario-card');
+  card.classList.add('exiting');
+
+  setTimeout(() => {
+    currentIndex++;
+    renderCard(currentIndex);
+  }, 300);
+}
+
+// ── START ──────────────────────────────────────────────
+function startGame() {
+  currentIndex = 0;
+  userChoices  = [];
+  matched      = 0;
+
+  showScreen('screen-game');
+  $('progress-wrap').classList.add('visible');
+  renderCard(0);
+
+  // Scroll to top of iframe
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── END SCREEN ─────────────────────────────────────────
+function showEnd() {
+  // Progress to 100%
+  $('progress-fill').style.width = '100%';
+
+  setTimeout(() => {
+    showScreen('screen-end');
+    $('progress-wrap').classList.remove('visible');
+
+    // Score
+    $('end-matched').textContent = matched;
+    $('end-diff').textContent    = scenarios.length - matched;
+
+    // Values summary
+    const valueCards = { pono: [], tika: [], aroha: [], whakapapa: [] };
+    scenarios.forEach(s => {
+      const v = s.value;
+      if (valueCards[v]) {
+        valueCards[v].push(`Scenario ${s.id}: ${s.title}`);
+      } else {
+        // handles combined values like 'tika' for card 11 debrief
+        valueCards['tika'].push(`Scenario ${s.id}: ${s.title}`);
+      }
+    });
+
+    $('val-pono').innerHTML      = valueCards.pono.join('<br>') || '—';
+    $('val-tika').innerHTML      = valueCards.tika.join('<br>') || '—';
+    $('val-aroha').innerHTML     = valueCards.aroha.join('<br>') || '—';
+    $('val-whakapapa').innerHTML = valueCards.whakapapa.join('<br>') || '—';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 400);
+}
+
+// ── RESTART ────────────────────────────────────────────
+function restartGame() {
+  showScreen('screen-intro');
+  $('progress-fill').style.width = '0%';
+}
+
+</script>
+</body>
+</html>

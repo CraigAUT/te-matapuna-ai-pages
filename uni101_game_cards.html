@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNI101 AI Decision Game — Print Cards</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  :root {
+    --pono: #1d4ed8;
+    --pono-light: #dbeafe;
+    --tika: #0d7a5f;
+    --tika-light: #d1fae5;
+    --aroha: #be185d;
+    --aroha-light: #fce7f3;
+    --yes: #15803d;
+    --yes-light: #dcfce7;
+    --no: #b91c1c;
+    --no-light: #fee2e2;
+    --depends: #b45309;
+    --depends-light: #fef3c7;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+    padding: 24px;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: #1e293b;
+    margin-bottom: 4px;
+  }
+
+  .page-intro {
+    background: white;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    border-left: 5px solid var(--pono);
+    max-width: 820px;
+  }
+
+  .page-intro p { font-size: 14px; color: #475569; margin-top: 8px; line-height: 1.6; }
+  .page-intro .instructions { margin-top: 12px; }
+  .page-intro .instructions p { margin-top: 4px; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  /* ── STUDENT RESPONSE CARDS ─────────────────────── */
+  .student-sheet {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 32px;
+    max-width: 820px;
+  }
+
+  .response-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .response-card {
+    border-radius: 10px;
+    padding: 28px 16px;
+    text-align: center;
+    border: 3px solid;
+    position: relative;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .response-card .word {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .response-card .tagline {
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.85;
+    line-height: 1.4;
+    max-width: 14ch;
+  }
+
+  .response-card .cut-note {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-size: 9px;
+    opacity: 0.4;
+    font-style: italic;
+  }
+
+  .card-yes { background: var(--yes-light); border-color: var(--yes); color: var(--yes); }
+  .card-no { background: var(--no-light); border-color: var(--no); color: var(--no); }
+  .card-depends { background: var(--depends-light); border-color: var(--depends); color: var(--depends); }
+
+  .print-note {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  /* ── SCENARIO CARDS ─────────────────────────────── */
+  .scenarios-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    max-width: 820px;
+  }
+
+  .scenario-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .sc-header {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sc-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.5);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .sc-block-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .sc-answer-pill {
+    margin-left: auto;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.4);
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+  }
+
+  .sc-body { padding: 14px 16px; }
+
+  .sc-scenario {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #e2e8f0;
+  }
+
+  .sc-debrief-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .sc-value-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .sc-debrief-text {
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.5;
+  }
+
+  .sc-quote {
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: #f8fafc;
+    border-left: 3px solid #e2e8f0;
+    font-size: 11px;
+    color: #64748b;
+    font-style: italic;
+    line-height: 1.5;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* Block colour coding */
+  .block-1 .sc-header { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+  .block-2 .sc-header { background: linear-gradient(135deg, #0d7a5f, #10b981); }
+  .block-3 .sc-header { background: linear-gradient(135deg, #be185d, #ec4899); }
+  .block-4 .sc-header { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+
+  .block-1 .sc-debrief-label { color: var(--pono); }
+  .block-2 .sc-debrief-label { color: var(--tika); }
+  .block-3 .sc-debrief-label { color: var(--aroha); }
+  .block-4 .sc-debrief-label { color: #7c3aed; }
+
+  .tag-pono { background: var(--pono-light); color: var(--pono); }
+  .tag-tika { background: var(--tika-light); color: var(--tika); }
+  .tag-aroha { background: var(--aroha-light); color: var(--aroha); }
+  .tag-whakapapa { background: #f3e8ff; color: #7c3aed; }
+
+  /* ── PRINT ───────────────────────────────────────── */
+  @media print {
+    body { background: white; padding: 0; }
+    .page-intro { display: none; }
+    .no-print { display: none; }
+
+    /* Student cards — one sheet per student, fits on A4 */
+    .student-sheet {
+      page-break-after: always;
+      border: none;
+      padding: 20mm;
+      max-width: 100%;
+    }
+
+    .response-card { min-height: 200px; }
+    .response-card .word { font-size: 52px; }
+
+    /* Scenario cards — 2 per page */
+    .scenarios-grid {
+      max-width: 100%;
+      gap: 8mm;
+    }
+
+    .scenario-card {
+      page-break-inside: avoid;
+    }
+
+    .scenarios-grid .scenario-card:nth-child(2n+1) {
+      /* After every pair, suggest break — browser dependent */
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── PAGE INTRO ───────────────────────────────────────── -->
+<div class="page-intro no-print">
+  <h1>UNI101 · AI Decision Game — Print Pack</h1>
+  <p>Two sets of cards for the live classroom game. Print instructions below.</p>
+  <div class="instructions">
+    <p><strong>Student response cards:</strong> Print one copy of the response sheet per student. Pre-cut before class, or have students cut their own at the start. Each student gets three cards: YES, NO, IT DEPENDS.</p>
+    <p><strong>Scenario cards:</strong> Print one set for the facilitator. These include the scenario text, the suggested answer, and the values debrief notes. 12 cards across 6 pages (2 per page).</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 1: STUDENT RESPONSE CARDS
+     ════════════════════════════════════════════════════════ -->
+<div class="student-sheet">
+  <div class="section-label">Student response cards — print one sheet per student, cut along dotted lines</div>
+
+  <div style="margin-bottom: 10px; font-size: 13px; color: #475569;">
+    <strong>UNI101 · AI Decision Game</strong> &nbsp;·&nbsp; When your facilitator reads a scenario, hold up the card that reflects your view.
+  </div>
+
+  <div class="response-cards-grid">
+
+    <div class="response-card card-yes">
+      <div class="word">YES</div>
+      <div class="tagline">This use of AI is appropriate here</div>
+      <div class="cut-note">✂ cut here</div>
+    </div>
+
+    <div class="response-card card-no">
+      <div class="word">NO</div>
+      <div class="tagline">This use of AI is not appropriate here</div>
+      <div class="cut-note">✂ cut here</div>
+    </div>
+
+    <div class="response-card card-depends">
+      <div class="word">IT DEPENDS</div>
+      <div class="tagline">It depends on how and why you use it</div>
+      <div class="cut-note">✂ cut here</div>
+    </div>
+
+  </div>
+
+  <div class="print-note">UNI101 · Diploma of Arts · AI &amp; Your Research · AUT Library &amp; Learning Advisors</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 2: FACILITATOR SCENARIO CARDS
+     ════════════════════════════════════════════════════════ -->
+<div style="max-width: 820px; margin-bottom: 16px;">
+  <div class="section-label">Facilitator scenario cards — one set, print double-sided or single-sided</div>
+</div>
+
+<div class="scenarios-grid">
+
+  <!-- ── BLOCK 1: Research Question ── -->
+
+  <!-- CARD 1 -->
+  <div class="scenario-card block-1">
+    <div class="sc-header">
+      <div class="sc-number">1</div>
+      <div class="sc-block-label">Block 1 · Research Question</div>
+      <div class="sc-answer-pill">🟢 YES</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"You've been given a broad topic. You ask AI: 'What are some different angles I could take on this topic?' — then you choose the one that interests you most."</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-tika" lang="mi">Tika — the what</div>
+      <div class="sc-debrief-text">Using the right tool for the right task. AI is good at generating options. You're good at knowing what matters to you.</div>
+      <div class="sc-quote">"That's the right division of labour."</div>
+    </div>
+  </div>
+
+  <!-- CARD 2 -->
+  <div class="scenario-card block-1">
+    <div class="sc-header">
+      <div class="sc-number">2</div>
+      <div class="sc-block-label">Block 1 · Research Question</div>
+      <div class="sc-answer-pill">🟡 IT DEPENDS</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"You're stuck on your topic. You ask AI: 'What should my research question be?' — and you use what it gives you."</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-pono" lang="mi">Pono — the why</div>
+      <div class="sc-debrief-text">Did you interrogate it? Test it? Make it yours? Are you being honest about whose thinking this is?</div>
+      <div class="sc-quote">"A research question that doesn't come from your curiosity is very hard to write 1000 words about."</div>
+    </div>
+  </div>
+
+  <!-- CARD 3 -->
+  <div class="scenario-card block-1">
+    <div class="sc-header">
+      <div class="sc-number">3</div>
+      <div class="sc-block-label">Block 1 · Research Question</div>
+      <div class="sc-answer-pill">🟢 YES</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"You draft a research question yourself, then ask AI: 'Is this question too broad, too narrow, or about right for a 1000-word analysis?' You use the feedback to refine it."</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-aroha" lang="mi">Aroha — the how</div>
+      <div class="sc-debrief-text">Caring for your own learning — you did the hard part yourself and used AI to improve it.</div>
+      <div class="sc-quote">"You wrote it, you're evaluating it, you decide what to do with the feedback."</div>
+    </div>
+  </div>
+
+  <!-- ── BLOCK 2: Building Your Search ── -->
+
+  <!-- CARD 4 -->
+  <div class="scenario-card block-2">
+    <div class="sc-header">
+      <div class="sc-number">4</div>
+      <div class="sc-block-label">Block 2 · Building Your Search</div>
+      <div class="sc-answer-pill">🟢 YES</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"You use AI to brainstorm synonyms and related terms for your keywords — then you test those terms yourself in Library Search."</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-tika" lang="mi">Tika — the what</div>
+      <div class="sc-debrief-text">The right tool at the right moment. The intellectual work of evaluating which results are useful is still yours.</div>
+      <div class="sc-quote">"AI knows a lot of words. You know your topic. Together that's a useful search."</div>
+    </div>
+  </div>
+
+  <!-- CARD 5 -->
+  <div class="scenario-card block-2">
+    <div class="sc-header">
+      <div class="sc-number">5</div>
+      <div class="sc-block-label">Block 2 · Building Your Search</div>
+      <div class="sc-answer-pill">🟡 IT DEPENDS — leaning NO</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"You ask Copilot to find you three academic sources on your topic."</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-pono" lang="mi">Pono — truth &amp; reality</div>
+      <div class="sc-debrief-text">AI can hallucinate references. Does it have access to AUT Library databases? Can it verify those sources exist and are peer-reviewed?</div>
+      <div class="sc-quote">"Citing a source that doesn't exist is fabrication — even if you didn't mean it. Always verify in Library Search."</div>
+    </div>
+  </div>
+
+  <!-- CARD 6 -->
+  <div class="scenario-card block-2">
+    <div class="sc-header">
+      <div class="sc-number">6</div>
+      <div class="sc-block-label">Block 2 · Building Your Search</div>
+      <div class="sc-answer-pill">🔴 NO</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"You ask AI to find your three sources, summarise them, and you paste the summaries into your reference list."</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-pono" lang="mi">Pono</div>
+      <span style="display:inline-block; width: 6px;"></span>
+      <div class="sc-value-tag tag-tika" style="display:inline-block;" lang="mi">Tika</div>
+      <div class="sc-debrief-text" style="margin-top: 6px;">You haven't read the sources. You don't know if they exist. You don't know if the summary is accurate. This is fabrication risk at every step.</div>
+      <div class="sc-quote">"You're here to learn to read and think. That's the whole point of Stages 2 and 3."</div>
+    </div>
+  </div>
+
+  <!-- CARD 7 -->
+  <div class="scenario-card block-2">
+    <div class="sc-header">
+      <div class="sc-number">7</div>
+      <div class="sc-block-label">Block 2 · Building Your Search</div>
+      <div class="sc-answer-pill">🟢 YES</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"Following on from Card 4, you take your keywords and ask AI to combine them into a search string using AND, OR, NOT. You also ask it to explain the string in one sentence so you understand what it's doing. Then you run it yourself in Library Search."</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-tika" lang="mi">Tika — doing what is needed, in the right way</div>
+      <div class="sc-debrief-text">Asking for the one-sentence explanation is the key move. It's the difference between using a tool and understanding it.</div>
+      <div class="sc-quote">"Next time, you can build the string yourself."</div>
+    </div>
+  </div>
+
+  <!-- ── BLOCK 3: Reading & Note-Making ── -->
+
+  <!-- CARD 8 -->
+  <div class="scenario-card block-3">
+    <div class="sc-header">
+      <div class="sc-number">8</div>
+      <div class="sc-block-label">Block 3 · Reading &amp; Note-Making</div>
+      <div class="sc-answer-pill">🟡 IT DEPENDS</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"You don't understand a concept in your reading. You paste the paragraph into Copilot and ask it to explain it in plain language."</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-pono" lang="mi">Pono — honest intention</div>
+      <div class="sc-debrief-text">Are you using this to help you read — or instead of reading? Did you go back to the original text afterwards?</div>
+      <div class="sc-quote">"Using AI to unlock a difficult text: that's a reading strategy. Using AI so you never read the text: that's avoiding the learning."</div>
+    </div>
+  </div>
+
+  <!-- CARD 9 -->
+  <div class="scenario-card block-3">
+    <div class="sc-header">
+      <div class="sc-number">9</div>
+      <div class="sc-block-label">Block 3 · Reading &amp; Note-Making</div>
+      <div class="sc-answer-pill">🟢 YES</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"After reading a section, you explain the main idea back to Copilot in your own words and ask: 'Have I understood this correctly?'"</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-aroha" lang="mi">Aroha — caring for your own learning</div>
+      <div class="sc-debrief-text">You read, you processed, you tested your understanding. AI is the mirror, not the source.</div>
+      <div class="sc-quote">"This is a more sophisticated use of AI than most students think of. The thinking is yours."</div>
+    </div>
+  </div>
+
+  <!-- CARD 10 -->
+  <div class="scenario-card block-3">
+    <div class="sc-header">
+      <div class="sc-number">10</div>
+      <div class="sc-block-label">Block 3 · Reading &amp; Note-Making</div>
+      <div class="sc-answer-pill">🔴 NO</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"You ask Copilot to summarise an article for you. You use the summary as your notes and build your assignment from it."</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-whakapapa">Whakapapa of ideas</div>
+      <div class="sc-debrief-text">The original author's thinking has been filtered through AI — their voice, evidence, argument is no longer direct. You're citing ideas you haven't engaged with.</div>
+      <div class="sc-quote">"AI summaries can be subtly, confidently wrong. If you haven't read the source, you can't catch that."</div>
+    </div>
+  </div>
+
+  <!-- ── BLOCK 4: The Hard Ones ── -->
+
+  <!-- CARD 11 -->
+  <div class="scenario-card block-4">
+    <div class="sc-header">
+      <div class="sc-number">11</div>
+      <div class="sc-block-label">Block 4 · The Hard Ones</div>
+      <div class="sc-answer-pill">🟡 IT DEPENDS</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"You've written a rough first draft. You paste it into Copilot and ask: 'Does my argument make sense? Is there anything missing?'"</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-pono" lang="mi">Pono</div>
+      <span style="display:inline-block; width: 6px;"></span>
+      <div class="sc-value-tag tag-tika" style="display:inline-block;" lang="mi">Tika</div>
+      <div class="sc-debrief-text" style="margin-top: 6px;">Getting feedback on your own writing: legitimate. But — did you act on the feedback yourself, or did you ask Copilot to rewrite it?</div>
+      <div class="sc-quote">"Stage 6 is 'receive and apply feedback.' The question is whether the thinking and fixing is yours."</div>
+    </div>
+  </div>
+
+  <!-- CARD 12 -->
+  <div class="scenario-card block-4">
+    <div class="sc-header">
+      <div class="sc-number">12</div>
+      <div class="sc-block-label">Block 4 · The Hard Ones</div>
+      <div class="sc-answer-pill">🔴 NO</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-scenario">"You use AI at various points in your research process. At the end you're not sure exactly what counts as 'AI-generated material' — so you don't declare anything and just submit."</div>
+      <div class="sc-debrief-label">Values debrief</div>
+      <div class="sc-value-tag tag-pono" lang="mi">Pono — honesty even when it's unclear</div>
+      <div class="sc-debrief-text">The assessment is clear: any AI-generated material that informed your work must be cited. Uncertainty doesn't remove the obligation — it means ask.</div>
+      <div class="sc-quote">"Declaring too much is never a problem. Declaring nothing when you used something is."</div>
+    </div>
+  </div>
+
+</div><!-- /scenarios-grid -->
+
+<!-- ── FACILITATOR SEQUENCING NOTE ──────────────────────── -->
+<div class="page-intro no-print" style="margin-top: 24px; border-left-color: var(--tika);">
+  <h1 style="font-size: 16px;">Suggested sequencing</h1>
+  <p><strong>Open with:</strong> Cards 1, 4, 10 — clear YES, clear YES, clear NO — to establish the range quickly.</p>
+  <p style="margin-top: 6px;"><strong>Middle:</strong> Cards 8, 5, 11 — genuinely ambiguous, where the values framing does most work.</p>
+  <p style="margin-top: 6px;"><strong>Close with:</strong> Cards 2 and 12 — these generate most debate. Good to end on unresolved territory.</p>
+  <p style="margin-top: 6px;"><strong>Cards 4 → 7:</strong> Run these as a pair to show the workflow connecting. Ask students what changed between the two scenarios.</p>
+  <p style="margin-top: 6px;"><strong>Before Card 10:</strong> Introduce the whakapapa of ideas concept — that every idea has a lineage. The reading scenario lands much harder once students have that frame.</p>
+  <p style="margin-top: 6px;"><strong>For 30 students:</strong> Select 6–8 cards. Recommended: 1, 4, 7, 10, 8, 11, 12.</p>
+  <p style="margin-top: 6px;"><strong>For 15 students:</strong> Run all 12. Physical movement (YES / NO / IT DEPENDS corners) works well at this size.</p>
+</div>
+
+</body>
+</html>
