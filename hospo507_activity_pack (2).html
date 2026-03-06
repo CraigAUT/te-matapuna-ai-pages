@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HOSPO507 — Is this OK? Activity Pack</title>
+<style>
+  /* ── Reset ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f1f5f9; color: #1e293b; }
+
+  /* ── Screen preview layout ── */
+  .page { width: 210mm; min-height: 297mm; margin: 0 auto 24px; background: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.12); display: flex; flex-direction: column; }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; }
+    .page { width: 100%; min-height: 0; height: 297mm; margin: 0; box-shadow: none; overflow: hidden; page-break-after: always; break-after: page; }
+    .page:last-child { page-break-after: avoid; break-after: avoid; }
+    .placement-page { page-break-before: always; break-before: page; }
+    .scenario-page { height: auto; min-height: 297mm; }
+  }
+
+  /* ══ INSTRUCTIONS ══ */
+  .instructions-page { }
+  .inst-header { background: linear-gradient(135deg, #1e3a8a 0%, #065f46 50%, #831843 100%); padding: 32px 40px 28px; }
+  .inst-course { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+  .inst-title { font-size: 40px; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 6px; }
+  .inst-subtitle { font-size: 18px; color: rgba(255,255,255,0.85); font-weight: 400; }
+  .inst-body { padding: 20px 40px 24px; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+  .inst-section { }
+  .inst-h2 { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 10px; }
+  .inst-list { padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+  .inst-list li { font-size: 13px; line-height: 1.5; color: #334155; }
+  .inst-list li strong { color: #1e293b; }
+  .inst-list li em { font-style: italic; color: #475569; }
+  .inst-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .inst-value-box { border-radius: 8px; padding: 10px 12px; }
+  .pono-box { background: #dbeafe; border: 1px solid #93c5fd; }
+  .tika-box { background: #d1fae5; border: 1px solid #6ee7b7; }
+  .aroha-box { background: #fce7f3; border: 1px solid #f9a8d4; }
+  .value-label { font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 5px; }
+  .value-body { font-size: 11.5px; line-height: 1.45; color: #334155; }
+  .answer-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .answer-table th { background: #f1f5f9; padding: 7px 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #64748b; font-weight: 700; border-bottom: 2px solid #e2e8f0; }
+  .answer-table td { padding: 7px 10px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+  .answer-table tr:last-child td { border-bottom: none; }
+  .yes-text { color: #166534; font-weight: 700; }
+  .no-text { color: #991b1b; font-weight: 700; }
+  .dep-text { color: #92400e; font-weight: 700; }
+
+  /* ══ PLACEMENT CARDS ══ */
+  .placement-page { align-items: center; justify-content: center; border-radius: 0; }
+  .placement-inner { text-align: center; padding: 40px; }
+  .placement-emoji { font-size: 80px; line-height: 1; margin-bottom: 20px; }
+  .placement-word { font-size: 96px; font-weight: 900; line-height: 1; letter-spacing: -2px; margin-bottom: 12px; }
+  .placement-sub { font-size: 28px; font-weight: 600; opacity: 0.8; margin-bottom: 32px; }
+  .placement-rule { height: 3px; width: 120px; margin: 0 auto 28px; border-radius: 2px; opacity: 0.4; }
+  .placement-instruction { font-size: 16px; font-weight: 600; opacity: 0.55; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* ══ SCENARIO CARDS ══ */
+  .scenario-page { padding: 20px 24px; gap: 0; justify-content: space-around; }
+  .scenario-card { border: 2px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+  .sc-header { background: #1e293b; padding: 14px 18px; display: flex; align-items: center; gap: 12px; }
+  .sc-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: #fff; color: #1e293b; font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+  .sc-hook { font-size: 15px; font-weight: 700; color: #fff; line-height: 1.3; }
+  .sc-text { padding: 16px 18px; font-size: 15px; line-height: 1.7; color: #334155; flex: 1; }
+  .sc-footer { padding: 12px 18px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sc-verdict-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
+  .sc-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 100px; font-size: 12.5px; font-weight: 700; }
+  .yes-badge { background: #dcfce7; border: 1px solid #86efac; color: #166534; }
+  .no-badge  { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
+  .dep-badge { background: #fef9c3; border: 1px solid #fde68a; color: #92400e; }
+
+  /* Dashed cut line between cards on same page */
+  .scenario-page .scenario-card:first-child { margin-bottom: 16px; padding-bottom: 0; }
+  .scenario-page .scenario-card + .scenario-card { border-top: 2px dashed #cbd5e1; }
+</style>
+</head>
+<body>
+
+<div class="page instructions-page">
+  <div class="inst-header">
+    <div class="inst-header-inner">
+      <p class="inst-course">HOSPO507 &nbsp;·&nbsp; Academic Integrity &amp; AI</p>
+      <h1 class="inst-title">Is this OK?</h1>
+      <p class="inst-subtitle">A group sorting activity</p>
+    </div>
+  </div>
+
+  <div class="inst-body">
+
+    <div class="inst-section">
+      <h2 class="inst-h2">What you need</h2>
+      <ul class="inst-list">
+        <li>1 set of placement cards for the whole class — <span class="yes-text">YES</span>, <span class="no-text">NO</span>, <span class="dep-text">IT DEPENDS</span> — displayed at the front of the room or on a central table</li>
+        <li>2–3 scenario cards per small group, distributed from the shuffled deck so different groups get different scenarios</li>
+        <li>30 minutes total — see the lesson flow</li>
+      </ul>
+    </div>
+
+    <div class="inst-section">
+      <h2 class="inst-h2">How to run it</h2>
+      <ol class="inst-list">
+        <li><strong>No intro needed — just deal the cards.</strong> Don't explain the values first. Give each group 2–3 scenario cards. The 3 placement cards — YES, NO, IT DEPENDS — are displayed at the front for everyone to see. Ask groups to read their scenarios and decide where they'd place them. That's it.</li>
+        <li><strong>Groups discuss quietly first.</strong> One person reads the scenario aloud within the group. They agree on a placement and choose a spokesperson.</li>
+        <li><strong>Groups come up and place publicly.</strong> One group at a time — the spokesperson reads the scenario to the class, places it on the correct card, and gives the group's reason. Then ask the room: <em>"Does everyone agree? Who'd put it somewhere else — and why?"</em> Hold the disagreement — don't resolve it yet.</li>
+        <li><strong>Introduce the values after the game.</strong> Once groups have worked through their cards, introduce pono, tika, aroha as the framework that explains the reasoning they've already been doing.</li>
+        <li><strong>Card 8 is deliberately contested.</strong> Expect real disagreement. That's intentional — hold the tension rather than resolving it quickly.</li>
+      </ol>
+    </div>
+
+    <div class="inst-section">
+      <h2 class="inst-h2">Facilitation notes</h2>
+      <div class="inst-grid">
+        <div class="inst-value-box pono-box">
+          <p class="value-label">🔵 Pono — the why</p>
+          <p class="value-body">Is the work genuinely theirs? Is it truthful and sincere? Does it actually represent who they are and what they know?</p>
+        </div>
+        <div class="inst-value-box tika-box">
+          <p class="value-label">🟢 Tika — the what</p>
+          <p class="value-body">Did they follow the right process? Have they considered the consequences for everyone involved — including their assessor and classmates?</p>
+        </div>
+        <div class="inst-value-box aroha-box">
+          <p class="value-label">🩷 Aroha — the how</p>
+          <p class="value-body">Is there genuine care here — for their own learning, for their community, for the knowledge they carry? Aroha is relational.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="inst-section">
+      <h2 class="inst-h2">Answer guide</h2>
+      <table class="answer-table">
+        <thead><tr><th>#</th><th>Scenario</th><th>Primary answer</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Wei's reflection</td><td class="no-text">No</td><td>🔵 Pono</td></tr>
+          <tr><td>2</td><td>Marcus's references</td><td class="no-text">No</td><td>🔵 Pono</td></tr>
+          <tr><td>3</td><td>Priya's script</td><td class="dep-text">It depends (declaration)</td><td>🟢 Tika</td></tr>
+          <tr><td>4</td><td>David's rewrites</td><td class="no-text">No</td><td>🟢 Tika</td></tr>
+          <tr><td>5</td><td>Jin's cultural description</td><td class="dep-text">It depends (task requirements)</td><td>🩷 Aroha</td></tr>
+          <tr><td>6</td><td>Anh's AI essay</td><td class="no-text">No</td><td>🩷 Aroha</td></tr>
+          <tr><td>7</td><td>Mei's single prompt</td><td class="no-text">No</td><td>⚫ All three</td></tr>
+          <tr><td>8</td><td>Kofi's grammar help</td><td class="dep-text">Genuinely contested</td><td>⚫ All three</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+<div class="page placement-page" style="background:#f0fdf4;border:8px solid #22c55e;">
+  <div class="placement-inner">
+    <div class="placement-emoji">✅</div>
+    <div class="placement-word" style="color:#166534;">YES</div>
+    <div class="placement-sub" style="color:#166534;">This is fine</div>
+    <div class="placement-rule" style="background:#22c55e;"></div>
+    <p class="placement-instruction" style="color:#166534;">Place scenario cards here</p>
+  </div>
+</div>
+<div class="page placement-page" style="background:#fff5f5;border:8px solid #ef4444;">
+  <div class="placement-inner">
+    <div class="placement-emoji">❌</div>
+    <div class="placement-word" style="color:#991b1b;">NO</div>
+    <div class="placement-sub" style="color:#991b1b;">This isn't OK</div>
+    <div class="placement-rule" style="background:#ef4444;"></div>
+    <p class="placement-instruction" style="color:#991b1b;">Place scenario cards here</p>
+  </div>
+</div>
+<div class="page placement-page" style="background:#fffbeb;border:8px solid #f59e0b;">
+  <div class="placement-inner">
+    <div class="placement-emoji">🤔</div>
+    <div class="placement-word" style="color:#92400e;">IT DEPENDS</div>
+    <div class="placement-sub" style="color:#92400e;">Context matters</div>
+    <div class="placement-rule" style="background:#f59e0b;"></div>
+    <p class="placement-instruction" style="color:#92400e;">Place scenario cards here</p>
+  </div>
+</div>
+<div class="page scenario-page"><div class="scenario-card">
+    <div class="sc-header">
+      <span class="sc-num">1</span>
+      <span class="sc-hook">Wei asks AI to write his reflection on his family's culture</span>
+    </div>
+    <p class="sc-text">Wei asks AI to write his personal reflection on what hospitality means in his Chinese family's culture. He submits it with minor edits. When his lecturer asks about his ideas, he can't explain them.</p>
+    <div class="sc-footer">
+      <span class="sc-verdict-label">Is this OK?</span>
+      <span class="sc-badge yes-badge">✅ Yes</span>
+      <span class="sc-badge no-badge">❌ No</span>
+      <span class="sc-badge dep-badge">🤔 It depends</span>
+    </div>
+  </div>
+<div class="scenario-card">
+    <div class="sc-header">
+      <span class="sc-num">2</span>
+      <span class="sc-hook">Marcus uses AI-generated references — two don't exist</span>
+    </div>
+    <p class="sc-text">Marcus uses AI to generate a reference list for his essay and submits without checking any of them. Two of the four references turn out to be completely fabricated — the journals and authors don't exist.</p>
+    <div class="sc-footer">
+      <span class="sc-verdict-label">Is this OK?</span>
+      <span class="sc-badge yes-badge">✅ Yes</span>
+      <span class="sc-badge no-badge">❌ No</span>
+      <span class="sc-badge dep-badge">🤔 It depends</span>
+    </div>
+  </div></div>
+<div class="page scenario-page"><div class="scenario-card">
+    <div class="sc-header">
+      <span class="sc-num">3</span>
+      <span class="sc-hook">Priya polishes her script with AI but doesn't declare it</span>
+    </div>
+    <p class="sc-text">Priya uses AI to polish her video script. Her ideas come entirely from her own family interviews, but she asks AI to 'make it sound more professional.' She doesn't declare any AI involvement on her submission.</p>
+    <div class="sc-footer">
+      <span class="sc-verdict-label">Is this OK?</span>
+      <span class="sc-badge yes-badge">✅ Yes</span>
+      <span class="sc-badge no-badge">❌ No</span>
+      <span class="sc-badge dep-badge">🤔 It depends</span>
+    </div>
+  </div>
+<div class="scenario-card">
+    <div class="sc-header">
+      <span class="sc-num">4</span>
+      <span class="sc-hook">David rewrites AI paragraphs — does that count?</span>
+    </div>
+    <p class="sc-text">David had AI draft the analysis paragraphs in his essay, then rewrote every sentence in his own words. He thinks this is fine because none of the original AI wording remains.</p>
+    <div class="sc-footer">
+      <span class="sc-verdict-label">Is this OK?</span>
+      <span class="sc-badge yes-badge">✅ Yes</span>
+      <span class="sc-badge no-badge">❌ No</span>
+      <span class="sc-badge dep-badge">🤔 It depends</span>
+    </div>
+  </div></div>
+<div class="page scenario-page"><div class="scenario-card">
+    <div class="sc-header">
+      <span class="sc-num">5</span>
+      <span class="sc-hook">Jun uses AI's generic cultural description instead of his own</span>
+    </div>
+    <p class="sc-text">Jun knows his family has rich hospitality traditions going back generations. For his Assessment 1 video, instead of drawing on that lived knowledge, he asks AI for 'a Korean perspective on hospitality' and uses the generic description it produces.</p>
+    <div class="sc-footer">
+      <span class="sc-verdict-label">Is this OK?</span>
+      <span class="sc-badge yes-badge">✅ Yes</span>
+      <span class="sc-badge no-badge">❌ No</span>
+      <span class="sc-badge dep-badge">🤔 It depends</span>
+    </div>
+  </div>
+<div class="scenario-card">
+    <div class="sc-header">
+      <span class="sc-num">6</span>
+      <span class="sc-hook">Anh uses AI while classmates work all week on their own</span>
+    </div>
+    <p class="sc-text">Anh submits her essay largely written by AI while her classmates spent the whole week researching and writing their own. She feels fine about it and plans to do the same for Assessment 2.</p>
+    <div class="sc-footer">
+      <span class="sc-verdict-label">Is this OK?</span>
+      <span class="sc-badge yes-badge">✅ Yes</span>
+      <span class="sc-badge no-badge">❌ No</span>
+      <span class="sc-badge dep-badge">🤔 It depends</span>
+    </div>
+  </div></div>
+<div class="page scenario-page"><div class="scenario-card">
+    <div class="sc-header">
+      <span class="sc-num">7</span>
+      <span class="sc-hook">Mei types one prompt and submits the result directly</span>
+    </div>
+    <p class="sc-text">Mei asks AI: 'Write me a 600-word essay on overtourism using 3 academic references.' She submits the result directly. The references AI generated don't exist in any database.</p>
+    <div class="sc-footer">
+      <span class="sc-verdict-label">Is this OK?</span>
+      <span class="sc-badge yes-badge">✅ Yes</span>
+      <span class="sc-badge no-badge">❌ No</span>
+      <span class="sc-badge dep-badge">🤔 It depends</span>
+    </div>
+  </div>
+<div class="scenario-card">
+    <div class="sc-header">
+      <span class="sc-num">8</span>
+      <span class="sc-hook">Kofi uses AI to fix his grammar — his ideas are all his own</span>
+    </div>
+    <p class="sc-text">English is Kofi's third language. He writes all his ideas, analysis, and arguments in detailed notes — entirely his own thinking. He then uses AI to help him construct grammatically correct sentences from those notes. He doesn't declare it.</p>
+    <div class="sc-footer">
+      <span class="sc-verdict-label">Is this OK?</span>
+      <span class="sc-badge yes-badge">✅ Yes</span>
+      <span class="sc-badge no-badge">❌ No</span>
+      <span class="sc-badge dep-badge">🤔 It depends</span>
+    </div>
+  </div></div>
+
+</body>
+</html>
